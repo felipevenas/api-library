@@ -1,0 +1,20 @@
+--> Exibir os processos abertos no Docker
+docker ps
+
+--> Exibir os containers que foram parados
+docker ps -a
+
+--> Encerra o funcionamento do container até ser reativado
+docker stop (nome)
+
+--> Deleta um container
+docker container rm (nome)
+
+--> Criar uma nova network
+docker network create (nome)
+
+--> Rodar o PGADMIN4 via Docker
+docker run --name pgadmin4 -p 15432:80 -e PGADMIN_DEFAULT_EMAIL=admin@admin.com -e PGADMIN_DEFAULT_PASSWORD=admin (network) dpage/pgadmin4
+
+--> Rodar o Postgre via Docker
+docker run --name librarydb -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library (network) postgres:16.3
