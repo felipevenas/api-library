@@ -34,7 +34,6 @@ O sistema oferece operações completas de CRUD e filtragem de itens por categor
 | **Hibernate** 🛢️ | ORM utilizado pelo JPA |
 | **PostgreSQL** 🐘 |	Banco de dados relacional |
 | **Lombok** ✍️ |	Reduz a verbosidade do código Java |
-| **JUnit & Mockito** ✅ |	Testes unitários e mocks |
 
 ## 📁 Estrutura do Projeto
 
@@ -92,8 +91,7 @@ mvn spring-boot:run
 
 ## 📌 Próximos passos
 
-- 🔨 Desenvolver o aplicativo Android com integração à API
-- 🧠 Melhorar o modelo de categorização da API Python
+- 🔨 Desenvolver a documentação (Swagger)
 - 🔐 Implementar autenticação (JWT)
 ---
 
