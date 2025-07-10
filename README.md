@@ -11,11 +11,9 @@
 
 ## 📌 Descrição
 
-API REST desenvolvida em Java com Spring Boot para gerenciamento de lista de compras.
+API REST desenvolvida em Java com Spring Boot para gerenciamento de uma livraria.
 
-O sistema oferece operações completas de CRUD e filtragem de itens por categoria e status, com categorização automática dos itens utilizando uma API externa em Python baseada em machine learning.
-
-A aplicação foi projetada para futura integração com um aplicativo mobile Android, visando oferecer praticidade ao usuário durante compras em supermercados e organização de sua lista pessoal.
+O sistema oferece operações completas de CRUD e filtragem de itens por categoria e status.
 
 ## 🚀 Funcionalidades
 
