@@ -67,15 +67,6 @@ Você pode executar a API:
 - Configurar as variáveis de ambiente
 ---
 
-### 🧱 Configuração do banco de dados
-
-Crie o banco no PostgreSQL:
-
-```sql
-CREATE DATABASE listacompras_db;
-```
----
-
 ### 🔐 Variáveis de Ambiente
 
 Antes de executar a aplicação, configure um arquivo `.yml` ou defina as variáveis no ambiente do sistema:
