@@ -33,7 +33,7 @@ public class Book {
     @Column(name = "price", precision = 18, scale = 2, nullable = false)
     private BigDecimal price;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL) // --> Qualquer operação feita em livro, ele fará na tabela de autor junto.
     @JoinColumn(name = "id_author")
     private Author author;
 }
