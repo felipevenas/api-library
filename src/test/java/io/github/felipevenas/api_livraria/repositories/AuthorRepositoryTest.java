@@ -1,12 +1,14 @@
 package io.github.felipevenas.api_livraria.repositories;
 
 import io.github.felipevenas.api_livraria.model.entities.Author;
+import io.github.felipevenas.api_livraria.model.entities.Book;
 import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,6 +17,8 @@ public class AuthorRepositoryTest {
 
     @Autowired
     AuthorRepository authorRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
     @Test
     public void saveTest() {
@@ -43,6 +47,17 @@ public class AuthorRepositoryTest {
 
             authorRepository.save(author);
         }
+    }
+
+    @Test
+    void findBooksByAuthor() {
+        UUID id = UUID.fromString("88dab940-ca4d-4759-b047-9d339f944786");
+        var author = authorRepository.findById(id).get();
+
+        List<Book> books = bookRepository.findBooksByAuthor(author);
+        author.setBooks(books);
+
+        author.getBooks().forEach(System.out::println);
     }
 
 }

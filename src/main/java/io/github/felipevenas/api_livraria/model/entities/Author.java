@@ -9,13 +9,14 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "tb_author", schema = "public")
-@Data // Abrevia a criação de todos os seguintes elementos =
-// @Getter
-// @Setter
-// @NoArgsConstructor
-// @AllArgsConstructor
-// @ToString
-// @EqualsAndHashCode
+// @Data --> Abrevia a criação de todos os seguintes elementos:
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString (exclude = "books") // É preciso excluir o parâmetro 'Lazy' do toString
+// para não ser iniciado antes da hora, causando uma LazyException.
+@EqualsAndHashCode
 public class Author {
 
     @Id
@@ -32,8 +33,8 @@ public class Author {
     @Column(name = "nationality", length = 50, nullable = false)
     private String nationality;
 
-    // @OneToMany(mappedBy = "author")
-    @Transient
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Parâmetro do tipo 'Lazy'
+    //@Transient = Indica que o atributo não deve ser persistido em uma DB.
     private List<Book> books;
 
 }
