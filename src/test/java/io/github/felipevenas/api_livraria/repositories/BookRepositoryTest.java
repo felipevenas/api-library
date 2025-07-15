@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -62,6 +63,31 @@ public class BookRepositoryTest {
             bookRepository.deleteById(id);
             System.out.println("This book was deleted!");
         }
+    }
+
+    @Test
+    void findBooksByIsbn() {
+        String isbn = "00000-00002";
+        List<Book> books = bookRepository.findBooksByIsbn(isbn);
+        books.forEach(System.out::println);
+    }
+
+    @Test
+    void findBooksByTitle() {
+        String title = "First Book";
+        Optional<Book> possibleBook = bookRepository.findBooksByTitle(title);
+
+        if (possibleBook.isPresent()) {
+            Book book = possibleBook.get();
+            System.out.println(book);
+        }
+    }
+
+    @Test
+    void findBooksByAuthorAndPrice() {
+        Author author = authorRepository.findById(UUID.fromString("d04cb3c4-dd9b-43f4-9e63-6f712e1b1f2f")).get();
+        List<Book> books = bookRepository.findBooksByAuthorAndPrice(author, BigDecimal.valueOf(100));
+        books.forEach(System.out::println);
     }
 
 }
