@@ -60,4 +60,10 @@ public class AuthorRepositoryTest {
         author.getBooks().forEach(System.out::println);
     }
 
+    @Test
+    void findAll() {
+        List<Author> authors = authorRepository.findAll();
+        authors.forEach(System.out::println);
+    }
+
 }

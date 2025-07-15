@@ -25,19 +25,33 @@ public class BookRepositoryTest {
     @Test
     void saveTest() {
         Book book = new Book();
-        book.setTitle("Second Book");
-        book.setGenre(Genre.BIOGRAFIA);
-        book.setPrice(BigDecimal.valueOf(120));
-        book.setIsbn("00000-00002");
-        book.setPublicationDate(LocalDate.of(1990, 03, 30));
+        book.setTitle("Quarter Book");
+        book.setGenre(Genre.ROMANCE);
+        book.setPrice(BigDecimal.valueOf(160));
+        book.setIsbn("00000-00004");
+        book.setPublicationDate(LocalDate.of(2007, 07, 28));
 
-        UUID id = UUID.fromString("d04cb3c4-dd9b-43f4-9e63-6f712e1b1f2f");
+        UUID id = UUID.fromString("c1961d01-0a5e-497f-add7-cdf38940792f");
         Optional<Author> possibleAuthor = authorRepository.findById(id);
 
         if (possibleAuthor.isPresent()) {
             Author author = possibleAuthor.get();
             book.setAuthor(author);
             bookRepository.save(book);
+        }
+    }
+
+    @Test
+    void updateTest() {
+        UUID id = UUID.fromString("a4cf0d47-bc33-4533-b050-5e79b9288bd1");
+        Optional<Book> possibleBook = bookRepository.findById(id);
+
+        if (possibleBook.isPresent()) {
+            Book book = possibleBook.get();
+            book.setTitle("Third Book");
+
+            bookRepository.save(book);
+            System.out.println(book.getIsbn() + " was sucessfully updated!");
         }
     }
 
@@ -87,6 +101,12 @@ public class BookRepositoryTest {
     void findBooksByAuthorAndPrice() {
         Author author = authorRepository.findById(UUID.fromString("d04cb3c4-dd9b-43f4-9e63-6f712e1b1f2f")).get();
         List<Book> books = bookRepository.findBooksByAuthorAndPrice(author, BigDecimal.valueOf(100));
+        books.forEach(System.out::println);
+    }
+
+    @Test
+    void listAll() {
+        List<Book> books = bookRepository.listAll();
         books.forEach(System.out::println);
     }
 
