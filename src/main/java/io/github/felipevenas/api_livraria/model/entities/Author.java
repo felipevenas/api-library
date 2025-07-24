@@ -2,21 +2,29 @@ package io.github.felipevenas.api_livraria.model.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tb_author", schema = "public")
-// @Data --> Abrevia a criação de todos os seguintes elementos:
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString (exclude = "books") // É preciso excluir o parâmetro 'Lazy' do toString
-// para não ser iniciado antes da hora, causando uma LazyException.
 @EqualsAndHashCode
+
+@ToString (exclude = "books")
+// É preciso excluir o parâmetro 'Lazy' do toString para não ser iniciado antes da hora, causando uma LazyException.
+
+@EntityListeners(AuditingEntityListener.class)
+// Se nesse código houver anotações @LastModifiedDate ou @CreateDate, o código fica a escutar em segundo plano para realizar atualizações.
+
 public class Author {
 
     @Id
@@ -33,8 +41,16 @@ public class Author {
     @Column(name = "nationality", length = 50, nullable = false)
     private String nationality;
 
+    @Column(name = "signup_date")
+    @CreatedDate
+    private LocalDateTime signupDate;
+
+    @Column(name = "last_update_date")
+    @LastModifiedDate
+    private LocalDateTime lastUpdateDate;
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Parâmetro do tipo 'Lazy'
-    //@Transient = Indica que o atributo não deve ser persistido em uma DB.
+    // @Transient = Indica que o atributo não deve ser persistido em uma DB.
     private List<Book> books;
 
 }
