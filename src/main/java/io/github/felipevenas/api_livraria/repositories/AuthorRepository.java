@@ -9,9 +9,12 @@ import java.util.UUID;
 
 public interface AuthorRepository extends JpaRepository<Author, UUID> {
 
-    List<Author> findAuthorsByName(String name);
+    @Query List<Author> findByName(String name);
+    @Query List<Author> findByNationality(String nationality);
+    @Query List<Author> findByNameOrNationality(String name, String nationality);
 
     @Query("select a from Author as a order by a.dateBirthday")
     List<Author> listAll();
 
+    List<Author> findByNameAndNationality(String name, String nationality);
 }

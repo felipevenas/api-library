@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,10 +21,10 @@ public class AuthorController {
     private AuthorService authorService;
 
     @PostMapping
-    public ResponseEntity<Void> saveAuthor(@RequestBody AuthorDto author){
+    public ResponseEntity<Void> save(@RequestBody AuthorDto author){
 
         var authorEntity = author.convertToAuthor();
-        authorService.saveAuthor(authorEntity);
+        authorService.save(authorEntity);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -55,18 +54,31 @@ public class AuthorController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteAuthor(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
 
         var idAuthor = UUID.fromString(id);
         Optional<Author> possibleAuthor = authorService.getById(idAuthor);
 
         if(possibleAuthor.isPresent()) {
-            Author author = possibleAuthor.get();
-            authorService.deleteAuthor(author.getId());
+            authorService.delete(possibleAuthor.get());
             return ResponseEntity.ok().build();
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AuthorDto>> filterBy(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "nationality", required = false) String nationality) {
+
+        List<Author> result = authorService.findBy(name, nationality);
+        List<AuthorDto> authors = result.stream().map(author -> new AuthorDto(
+                author.getId(),
+                author.getName(),
+                author.getDateBirthday(),
+                author.getNationality())).toList();
+        return ResponseEntity.ok(authors);
     }
 
 }

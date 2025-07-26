@@ -15,8 +15,8 @@ public class AuthorService {
     @Autowired
     private AuthorRepository authorRepository;
 
-    public Author saveAuthor(Author author) {
-        return authorRepository.save(author);
+    public void save(Author author) {
+        authorRepository.save(author);
     }
 
     public Optional<Author> getById(UUID id) {
@@ -27,8 +27,22 @@ public class AuthorService {
         return authorRepository.findAll();
     }
 
-    public void deleteAuthor(UUID id) {
-        authorRepository.deleteById(id);
+    public void delete(Author author) {
+        authorRepository.delete(author);
+    }
+
+    public List<Author> findBy(String name, String nationality) {
+        if (name != null && nationality != null) {
+            return authorRepository.findByNameOrNationality(name, nationality);
+        } else if (name != null) {
+            return authorRepository.findByName(name);
+        }
+        else if (nationality != null){
+            return authorRepository.findByNationality(nationality);
+        }
+        else {
+            return findAll();
+        }
     }
 
 }
