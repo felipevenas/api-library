@@ -36,10 +36,10 @@ public class AuthorController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<AuthorDto> getById(@PathVariable("id") String id) {
+    public ResponseEntity<AuthorDto> findById(@PathVariable("id") String id) {
 
         var idAuthor = UUID.fromString(id);
-        Optional<Author> possibleAuthor = authorService.getById(idAuthor);
+        Optional<Author> possibleAuthor = authorService.findById(idAuthor);
 
         if(possibleAuthor.isPresent()) {
             Author author = possibleAuthor.get();
@@ -57,7 +57,7 @@ public class AuthorController {
     public ResponseEntity<Void> delete(@PathVariable String id) {
 
         var idAuthor = UUID.fromString(id);
-        Optional<Author> possibleAuthor = authorService.getById(idAuthor);
+        Optional<Author> possibleAuthor = authorService.findById(idAuthor);
 
         if(possibleAuthor.isPresent()) {
             authorService.delete(possibleAuthor.get());
@@ -81,4 +81,23 @@ public class AuthorController {
         return ResponseEntity.ok(authors);
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity<Void> update(
+            @PathVariable("id") String id,
+            @RequestBody AuthorDto authorDto) {
+
+        UUID idAuthor = UUID.fromString(id);
+        Optional<Author> possibleAuthor = authorService.findById(idAuthor);
+
+        if(possibleAuthor.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var author = possibleAuthor.get();
+        author.setName(authorDto.name());
+        author.setNationality(authorDto.nationality());
+        author.setDateBirthday(authorDto.dateBirthday());
+        authorService.save(author);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -19,7 +19,7 @@ public class AuthorService {
         authorRepository.save(author);
     }
 
-    public Optional<Author> getById(UUID id) {
+    public Optional<Author> findById(UUID id) {
         return authorRepository.findById(id);
     }
 
@@ -29,6 +29,13 @@ public class AuthorService {
 
     public void delete(Author author) {
         authorRepository.delete(author);
+    }
+
+    public void update(Author author) {
+        if (author.getId() == null) {
+            throw new IllegalArgumentException("This author isn't saved in database!");
+        }
+        authorRepository.save(author);
     }
 
     public List<Author> findBy(String name, String nationality) {
