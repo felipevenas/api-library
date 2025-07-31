@@ -2,6 +2,7 @@ package io.github.felipevenas.api_livraria.services;
 
 import io.github.felipevenas.api_livraria.model.entities.Author;
 import io.github.felipevenas.api_livraria.repositories.AuthorRepository;
+import io.github.felipevenas.api_livraria.validator.AuthorValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,18 @@ import java.util.UUID;
 @Service
 public class AuthorService {
 
-    @Autowired
     private AuthorRepository authorRepository;
+    private final AuthorValidator authorValidator;
 
+    // Injeção de dependência.
+    public AuthorService(AuthorValidator authorValidator, AuthorRepository authorRepository) {
+        this.authorValidator = authorValidator;
+        this.authorRepository = authorRepository;
+    }
+
+    // Sempre que o 'save' for chamado, ocorrerá uma validação.
     public void save(Author author) {
+        authorValidator.validator(author);
         authorRepository.save(author);
     }
 

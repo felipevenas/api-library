@@ -1,6 +1,8 @@
 package io.github.felipevenas.api_livraria.controllers;
 
 import io.github.felipevenas.api_livraria.controllers.dto.AuthorDto;
+import io.github.felipevenas.api_livraria.controllers.dto.ErrorResponse;
+import io.github.felipevenas.api_livraria.exceptions.DuplicatedRegistryException;
 import io.github.felipevenas.api_livraria.model.entities.Author;
 import io.github.felipevenas.api_livraria.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +23,24 @@ public class AuthorController {
     private AuthorService authorService;
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody AuthorDto author){
+    public ResponseEntity<?> save(@RequestBody AuthorDto author){
+        try {
+            var authorEntity = author.convertToAuthor();
+            authorService.save(authorEntity);
 
-        var authorEntity = author.convertToAuthor();
-        authorService.save(authorEntity);
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(authorEntity.getId())
+                    .toUri();
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(authorEntity.getId())
-                .toUri();
+            return ResponseEntity.created(location).build();
 
-        return ResponseEntity.created(location).build();
+        } catch (DuplicatedRegistryException e) {
+            var errorDto = ErrorResponse.conflictResponse(e.getMessage());
+            return ResponseEntity.status(errorDto.status()).body(errorDto);
+        }
+
     }
 
     @GetMapping("{id}")
@@ -82,22 +90,28 @@ public class AuthorController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> update(
+    public ResponseEntity<?> update(
             @PathVariable("id") String id,
             @RequestBody AuthorDto authorDto) {
 
-        UUID idAuthor = UUID.fromString(id);
-        Optional<Author> possibleAuthor = authorService.findById(idAuthor);
+        try {
+            UUID idAuthor = UUID.fromString(id);
+            Optional<Author> possibleAuthor = authorService.findById(idAuthor);
 
-        if(possibleAuthor.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            if(possibleAuthor.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            var author = possibleAuthor.get();
+            author.setName(authorDto.name());
+            author.setNationality(authorDto.nationality());
+            author.setDateBirthday(authorDto.dateBirthday());
+            authorService.save(author);
+            return ResponseEntity.ok().build();
+
+        } catch (DuplicatedRegistryException e) {
+            var errorDto = ErrorResponse.conflictResponse(e.getMessage());
+            return ResponseEntity.status(errorDto.status()).body(errorDto);
         }
-
-        var author = possibleAuthor.get();
-        author.setName(authorDto.name());
-        author.setNationality(authorDto.nationality());
-        author.setDateBirthday(authorDto.dateBirthday());
-        authorService.save(author);
-        return ResponseEntity.ok().build();
     }
 }
