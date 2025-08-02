@@ -1,13 +1,15 @@
 package io.github.felipevenas.api_livraria.model.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -37,6 +39,14 @@ public class Book {
 
     @Column(name = "price", precision = 18, scale = 2, nullable = false)
     private BigDecimal price;
+
+    @Column(name = "signup_date")
+    @CreatedDate
+    private LocalDateTime signupDate;
+
+    @Column(name = "last_update_date")
+    @LastModifiedDate
+    private LocalDateTime lastUpdateDate;
 
     @ManyToOne(fetch = FetchType.LAZY) // --> Só irá carregar as infos do Autor quando necessário.
     @JoinColumn(name = "id_author")

@@ -1,4 +1,4 @@
-package io.github.felipevenas.api_livraria.controllers.dto;
+package io.github.felipevenas.api_livraria.dto;
 
 import org.springframework.http.HttpStatus;
 

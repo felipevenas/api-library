@@ -3,7 +3,7 @@ package io.github.felipevenas.api_livraria.services;
 import io.github.felipevenas.api_livraria.model.entities.Author;
 import io.github.felipevenas.api_livraria.repositories.AuthorRepository;
 import io.github.felipevenas.api_livraria.validator.AuthorValidator;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,20 +11,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
+// Cria um construtor de todos os atributos do tipo 'final' - Ajuda na injeção de dependências automática.
 public class AuthorService {
 
-    private AuthorRepository authorRepository;
+    private final AuthorRepository authorRepository;
     private final AuthorValidator authorValidator;
-
-    // Injeção de dependência.
-    public AuthorService(AuthorValidator authorValidator, AuthorRepository authorRepository) {
-        this.authorValidator = authorValidator;
-        this.authorRepository = authorRepository;
-    }
 
     // Sempre que o 'save' for chamado, ocorrerá uma validação.
     public void save(Author author) {
-        authorValidator.validator(author);
+        authorValidator.duplicityValidator(author);
         authorRepository.save(author);
     }
 
@@ -37,12 +33,13 @@ public class AuthorService {
     }
 
     public void delete(Author author) {
+        authorValidator.containBookValidator(author);
         authorRepository.delete(author);
     }
 
     public void update(Author author) {
         if (author.getId() == null) {
-            throw new IllegalArgumentException("This author isn't saved in database!");
+            throw new IllegalArgumentException("This author is not saved in database!");
         }
         authorRepository.save(author);
     }

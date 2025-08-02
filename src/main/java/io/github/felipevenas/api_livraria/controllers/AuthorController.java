@@ -1,10 +1,11 @@
 package io.github.felipevenas.api_livraria.controllers;
 
-import io.github.felipevenas.api_livraria.controllers.dto.AuthorDto;
-import io.github.felipevenas.api_livraria.controllers.dto.ErrorResponse;
+import io.github.felipevenas.api_livraria.dto.AuthorDto;
+import io.github.felipevenas.api_livraria.dto.ErrorResponse;
 import io.github.felipevenas.api_livraria.exceptions.DuplicatedRegistryException;
 import io.github.felipevenas.api_livraria.model.entities.Author;
 import io.github.felipevenas.api_livraria.services.AuthorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class AuthorController {
     private AuthorService authorService;
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody AuthorDto author){
+    public ResponseEntity<?> save(@RequestBody @Valid AuthorDto author){
         try {
             var authorEntity = author.convertToAuthor();
             authorService.save(authorEntity);
@@ -92,7 +93,7 @@ public class AuthorController {
     @PutMapping("{id}")
     public ResponseEntity<?> update(
             @PathVariable("id") String id,
-            @RequestBody AuthorDto authorDto) {
+            @RequestBody @Valid AuthorDto authorDto) {
 
         try {
             UUID idAuthor = UUID.fromString(id);

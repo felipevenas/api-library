@@ -1,5 +1,6 @@
 package io.github.felipevenas.api_livraria.validator;
 
+import io.github.felipevenas.api_livraria.exceptions.ContainBooksException;
 import io.github.felipevenas.api_livraria.exceptions.DuplicatedRegistryException;
 import io.github.felipevenas.api_livraria.model.entities.Author;
 import io.github.felipevenas.api_livraria.repositories.AuthorRepository;
@@ -17,7 +18,7 @@ public class AuthorValidator {
         this.authorRepository = authorRepository;
     }
 
-    public void validator(Author author) {
+    public void duplicityValidator(Author author) {
         Optional<Author> possibleAuthor = authorRepository.findByNameAndDateBirthdayAndNationality(
                 author.getName(),
                 author.getDateBirthday(),
@@ -25,6 +26,13 @@ public class AuthorValidator {
 
         if (possibleAuthor.isPresent()) {
             throw new DuplicatedRegistryException("This author already exists in database!");
+        }
+    }
+
+    public void containBookValidator(Author author) {
+        int num = author.getBooks().size();
+        if (num >= 1) {
+            throw new ContainBooksException("This author has books registered!");
         }
     }
 
