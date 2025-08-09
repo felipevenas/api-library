@@ -29,12 +29,4 @@ public class AuthorValidator {
         }
     }
 
-    public void containBookValidator(Author author) {
-        int num = author.getBooks().size();
-        if (num >= 1) {
-            throw new ContainBooksException("This author has books registered!");
-        }
-    }
-
-
 }

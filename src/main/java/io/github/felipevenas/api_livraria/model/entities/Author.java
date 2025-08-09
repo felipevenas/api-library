@@ -1,6 +1,7 @@
 package io.github.felipevenas.api_livraria.model.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Past;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -36,6 +37,7 @@ public class Author {
     private String name;
 
     @Column(name = "date_birthday", nullable = false)
+    @Past(message = "Past date is required.")
     private LocalDate dateBirthday;
 
     @Column(name = "nationality", length = 50, nullable = false)

@@ -4,6 +4,8 @@ import io.github.felipevenas.api_livraria.model.entities.Author;
 import io.github.felipevenas.api_livraria.repositories.AuthorRepository;
 import io.github.felipevenas.api_livraria.validator.AuthorValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,7 +35,6 @@ public class AuthorService {
     }
 
     public void delete(Author author) {
-        authorValidator.containBookValidator(author);
         authorRepository.delete(author);
     }
 
@@ -42,6 +43,23 @@ public class AuthorService {
             throw new IllegalArgumentException("This author is not saved in database!");
         }
         authorRepository.save(author);
+    }
+
+    // Faz com que não precise digitar o nome exatamente como está no banco para buscar as opções.
+    public List<Author> findByExample(String name, String nationality) {
+        Author author = new Author();
+        author.setName(name);
+        author.setNationality(nationality);
+
+        ExampleMatcher matcher = ExampleMatcher
+                .matching()
+                .withIgnorePaths("id", "signupDate", "lastUpdateDate")
+                .withIgnoreNullValues() // --> Ignora os campos que não foram digitados.
+                .withIgnoreCase()       // --> Ignora o capslock.
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING); // --> Faz um matching entre o que foi digitado e o que está salvo no banco.
+        Example<Author> authorExample = Example.of(author, matcher);
+
+        return authorRepository.findAll(authorExample);
     }
 
     public List<Author> findBy(String name, String nationality) {

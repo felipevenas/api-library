@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/authors")
+@RequestMapping("/author")
 public class AuthorController {
 
     @Autowired
@@ -81,7 +81,7 @@ public class AuthorController {
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "nationality", required = false) String nationality) {
 
-        List<Author> result = authorService.findBy(name, nationality);
+        List<Author> result = authorService.findByExample(name, nationality);
         List<AuthorDto> authors = result.stream().map(author -> new AuthorDto(
                 author.getId(),
                 author.getName(),
