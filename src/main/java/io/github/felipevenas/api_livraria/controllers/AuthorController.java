@@ -1,5 +1,6 @@
 package io.github.felipevenas.api_livraria.controllers;
 
+import io.github.felipevenas.api_livraria.controllers.mappers.AuthorMapper;
 import io.github.felipevenas.api_livraria.dto.AuthorDto;
 import io.github.felipevenas.api_livraria.dto.ErrorResponse;
 import io.github.felipevenas.api_livraria.exceptions.DuplicatedRegistryException;
@@ -20,13 +21,18 @@ import java.util.UUID;
 @RequestMapping("/author")
 public class AuthorController {
 
-    @Autowired
-    private AuthorService authorService;
+    private final AuthorService authorService;
+    private final AuthorMapper authorMapper;
+
+    public AuthorController(AuthorService authorService, AuthorMapper authorMapper) {
+        this.authorService = authorService;
+        this.authorMapper = authorMapper;
+    }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody @Valid AuthorDto author){
+    public ResponseEntity<?> save(@RequestBody @Valid AuthorDto authorDto){
         try {
-            var authorEntity = author.convertToAuthor();
+            var authorEntity = authorMapper.toAuthor(authorDto);
             authorService.save(authorEntity);
 
             URI location = ServletUriComponentsBuilder
@@ -52,10 +58,7 @@ public class AuthorController {
 
         if(possibleAuthor.isPresent()) {
             Author author = possibleAuthor.get();
-            AuthorDto authorDto = new AuthorDto(author.getId(),
-                                                author.getName(),
-                                                author.getDateBirthday(),
-                                                author.getNationality());
+            AuthorDto authorDto = authorMapper.toAuthorDto(author);
             return ResponseEntity.ok(authorDto);
         }
 
