@@ -1,32 +1,55 @@
 package io.github.felipevenas.api_livraria.controllers;
 
-import io.github.felipevenas.api_livraria.dto.BookDto;
-import io.github.felipevenas.api_livraria.dto.ErrorResponse;
-import io.github.felipevenas.api_livraria.exceptions.DuplicatedRegistryException;
+import io.github.felipevenas.api_livraria.controllers.mappers.BookMapper;
+import io.github.felipevenas.api_livraria.dto.CreateBookDto;
+import io.github.felipevenas.api_livraria.dto.SearchBookDto;
+import io.github.felipevenas.api_livraria.model.entities.Book;
 import io.github.felipevenas.api_livraria.services.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
-public class BookController {
+public class BookController implements GenericController {
 
     private final BookService bookService;
+    private final BookMapper bookMapper;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid BookDto book) {
-        try {
-            var bookEntity = book.convertToBook();
-            bookService.save(bookEntity);
+    public ResponseEntity<Void> save(@RequestBody @Valid CreateBookDto createBookDto) {
+        Book book = bookMapper.toBook(createBookDto);
+        bookService.save(book);
+        var url = generateHeaderLocation(book.getId());
+        return ResponseEntity.created(url).build();
+    }
 
-            return ResponseEntity.ok(book);
+    @GetMapping("{id}")
+    public ResponseEntity<SearchBookDto> findById(
+            @PathVariable("id") String id) {
 
-        } catch (DuplicatedRegistryException e) {
-            var errorDto = ErrorResponse.conflictResponse(e.getMessage());
-            return ResponseEntity.status(errorDto.status()).build();
-        }
+        return bookService.findById(UUID.fromString(id))
+                .map(book -> {
+                    var dto = bookMapper.toDto(book);
+                    return ResponseEntity.ok(dto);
+                }).orElseGet(() -> ResponseEntity.notFound().build());
+
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Object> deleteByObject(
+            @PathVariable String id) {
+
+        return bookService.findById(UUID.fromString(id))
+                .map(book -> {
+                    bookService.delete(book);
+                    return ResponseEntity.noContent().build();
+                }).orElseGet( () -> ResponseEntity.notFound().build());
+
     }
 }
+

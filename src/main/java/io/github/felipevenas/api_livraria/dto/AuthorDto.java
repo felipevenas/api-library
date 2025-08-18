@@ -17,12 +17,4 @@ public record AuthorDto(
         @NotBlank(message = "Required field.")
         String nationality) {
 
-    public Author convertToAuthor() {
-        Author author = new Author();
-        author.setName(name);
-        author.setDateBirthday(dateBirthday);
-        author.setNationality(nationality);
-        return author;
-    }
-
 }

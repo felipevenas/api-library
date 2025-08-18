@@ -1,9 +1,10 @@
 package io.github.felipevenas.api_livraria.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,10 +15,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tb_book", schema = "public")
+@Table(name = "tb_book")
+@Data
 @ToString(exclude = "author")
-@Getter
-@Setter
 @EntityListeners(AuditingEntityListener.class)
 public class Book {
 
@@ -52,5 +52,8 @@ public class Book {
 
     @ManyToOne(fetch = FetchType.LAZY) // --> Só irá carregar as infos do Autor quando necessário.
     @JoinColumn(name = "id_author")
+    @JsonManagedReference
     private Author author;
+
+
 }

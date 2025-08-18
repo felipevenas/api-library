@@ -1,5 +1,7 @@
 package io.github.felipevenas.api_livraria.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
 import lombok.*;
@@ -16,16 +18,8 @@ import java.util.UUID;
 @Table(name = "tb_author", schema = "public")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
-
-@ToString (exclude = "books")
-// É preciso excluir o parâmetro 'Lazy' do toString para não ser iniciado antes da hora, causando uma LazyException.
-
-@EntityListeners(AuditingEntityListener.class)
-// Se nesse código houver anotações @LastModifiedDate ou @CreateDate, o código fica a escutar em segundo plano para realizar atualizações.
-
+@ToString (exclude = "books") // É preciso excluir o parâmetro 'Lazy' do toString para não ser iniciado antes da hora, causando uma LazyException.
+@EntityListeners(AuditingEntityListener.class) // Se nesse código houver anotações @LastModifiedDate ou @CreateDate, o código fica a escutar em segundo plano para realizar atualizações.
 public class Author {
 
     @Id
@@ -51,8 +45,8 @@ public class Author {
     @LastModifiedDate
     private LocalDateTime lastUpdateDate;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Parâmetro do tipo 'Lazy'
-    // @Transient = Indica que o atributo não deve ser persistido em uma DB.
+    @JsonBackReference
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY) // Parâmetro do tipo 'Lazy'
     private List<Book> books;
 
 }

@@ -2,15 +2,11 @@ package io.github.felipevenas.api_livraria.controllers;
 
 import io.github.felipevenas.api_livraria.controllers.mappers.AuthorMapper;
 import io.github.felipevenas.api_livraria.dto.AuthorDto;
-import io.github.felipevenas.api_livraria.dto.ErrorResponse;
-import io.github.felipevenas.api_livraria.exceptions.DuplicatedRegistryException;
 import io.github.felipevenas.api_livraria.model.entities.Author;
 import io.github.felipevenas.api_livraria.services.AuthorService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -19,7 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/author")
-public class AuthorController {
+public class AuthorController implements GenericController {
 
     private final AuthorService authorService;
     private final AuthorMapper authorMapper;
@@ -30,23 +26,13 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody @Valid AuthorDto authorDto){
-        try {
-            var authorEntity = authorMapper.toAuthor(authorDto);
-            authorService.save(authorEntity);
+    public ResponseEntity<Void> save(@RequestBody @Valid AuthorDto authorDto) {
 
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(authorEntity.getId())
-                    .toUri();
+        var authorEntity = authorMapper.toAuthor(authorDto);
+        authorService.save(authorEntity);
 
-            return ResponseEntity.created(location).build();
-
-        } catch (DuplicatedRegistryException e) {
-            var errorDto = ErrorResponse.conflictResponse(e.getMessage());
-            return ResponseEntity.status(errorDto.status()).body(errorDto);
-        }
+        URI location = generateHeaderLocation(authorEntity.getId());
+        return ResponseEntity.created(location).build();
 
     }
 
@@ -56,7 +42,7 @@ public class AuthorController {
         var idAuthor = UUID.fromString(id);
         Optional<Author> possibleAuthor = authorService.findById(idAuthor);
 
-        if(possibleAuthor.isPresent()) {
+        if (possibleAuthor.isPresent()) {
             Author author = possibleAuthor.get();
             AuthorDto authorDto = authorMapper.toAuthorDto(author);
             return ResponseEntity.ok(authorDto);
@@ -71,7 +57,7 @@ public class AuthorController {
         var idAuthor = UUID.fromString(id);
         Optional<Author> possibleAuthor = authorService.findById(idAuthor);
 
-        if(possibleAuthor.isPresent()) {
+        if (possibleAuthor.isPresent()) {
             authorService.delete(possibleAuthor.get());
             return ResponseEntity.ok().build();
         }
@@ -94,28 +80,24 @@ public class AuthorController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<Void> update(
             @PathVariable("id") String id,
             @RequestBody @Valid AuthorDto authorDto) {
 
-        try {
-            UUID idAuthor = UUID.fromString(id);
-            Optional<Author> possibleAuthor = authorService.findById(idAuthor);
+        UUID idAuthor = UUID.fromString(id);
+        Optional<Author> possibleAuthor = authorService.findById(idAuthor);
 
-            if(possibleAuthor.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            var author = possibleAuthor.get();
-            author.setName(authorDto.name());
-            author.setNationality(authorDto.nationality());
-            author.setDateBirthday(authorDto.dateBirthday());
-            authorService.save(author);
-            return ResponseEntity.ok().build();
-
-        } catch (DuplicatedRegistryException e) {
-            var errorDto = ErrorResponse.conflictResponse(e.getMessage());
-            return ResponseEntity.status(errorDto.status()).body(errorDto);
+        if (possibleAuthor.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
+
+        var author = possibleAuthor.get();
+        author.setName(authorDto.name());
+        author.setNationality(authorDto.nationality());
+        author.setDateBirthday(authorDto.dateBirthday());
+        authorService.save(author);
+
+        return ResponseEntity.ok().build();
+
     }
 }
