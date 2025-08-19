@@ -66,11 +66,11 @@ public class AuthorController implements GenericController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AuthorDto>> filterBy(
+    public ResponseEntity<List<AuthorDto>> search(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "nationality", required = false) String nationality) {
 
-        List<Author> result = authorService.findByExample(name, nationality);
+        List<Author> result = authorService.search(name, nationality);
         List<AuthorDto> authors = result.stream().map(author -> new AuthorDto(
                 author.getId(),
                 author.getName(),

@@ -47,7 +47,7 @@ public class AuthorService {
     }
 
     // Faz com que não precise digitar o nome exatamente como está no banco para buscar as opções.
-    public List<Author> findByExample(String name, String nationality) {
+    public List<Author> search(String name, String nationality) {
         Author author = new Author();
         author.setName(name);
         author.setNationality(nationality);

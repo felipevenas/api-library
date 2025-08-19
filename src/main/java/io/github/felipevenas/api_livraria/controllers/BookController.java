@@ -4,13 +4,16 @@ import io.github.felipevenas.api_livraria.controllers.mappers.BookMapper;
 import io.github.felipevenas.api_livraria.dto.CreateBookDto;
 import io.github.felipevenas.api_livraria.dto.SearchBookDto;
 import io.github.felipevenas.api_livraria.model.entities.Book;
+import io.github.felipevenas.api_livraria.model.entities.Genre;
 import io.github.felipevenas.api_livraria.services.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/books")
@@ -50,6 +53,28 @@ public class BookController implements GenericController {
                     return ResponseEntity.noContent().build();
                 }).orElseGet( () -> ResponseEntity.notFound().build());
 
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<SearchBookDto>> search(
+            @RequestParam(value = "isbn", required = false)
+            String isbn,
+            @RequestParam(value = "title", required = false)
+            String title,
+            @RequestParam(value = "author-name", required = false)
+            String authorName,
+            @RequestParam(value = "genre", required = false)
+            Genre genre,
+            @RequestParam(value = "publication-year", required = false)
+            Integer publicationYear) {
+
+        var result = bookService.search(isbn, title, authorName, genre, publicationYear);
+        var list = result
+                .stream()
+                .map(bookMapper::toDto)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(list);
     }
 }
 
