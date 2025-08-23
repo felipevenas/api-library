@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -76,5 +78,28 @@ public class BookController implements GenericController {
 
         return ResponseEntity.ok(list);
     }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Object> update(@PathVariable("id") String id,
+                                       @RequestBody @Valid CreateBookDto dto) {
+
+        return bookService.findById(UUID.fromString(id))
+                .map(book -> {
+                    Book entityAux = bookMapper.toBook(dto);
+
+                    book.setTitle(entityAux.getTitle());
+                    book.setIsbn(entityAux.getIsbn());
+                    book.setPrice(entityAux.getPrice());
+                    book.setGenre(entityAux.getGenre());
+                    book.setPublicationDate(entityAux.getPublicationDate());
+
+                    bookService.save(book);
+
+                    return ResponseEntity.noContent().build();
+
+                }).orElseGet( () -> ResponseEntity.notFound().build() );
+
+    }
+
 }
 

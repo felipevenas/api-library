@@ -20,5 +20,15 @@ public class BookSpec {
                 criteriaBuilder.equal(root.get("genre"), genre);
     }
 
+    public static Specification<Book> publicationYearEqual(Integer publicationYear) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(criteriaBuilder.function(
+                        "to_char",
+                        String.class,
+                        root.get("publicationYear"),
+                        criteriaBuilder.literal("YYYY")),
+                        publicationYear.toString());
+    }
+
 
 }
