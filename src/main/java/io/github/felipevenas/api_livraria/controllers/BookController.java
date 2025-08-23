@@ -6,6 +6,7 @@ import io.github.felipevenas.api_livraria.dto.SearchBookDto;
 import io.github.felipevenas.api_livraria.model.entities.Book;
 import io.github.felipevenas.api_livraria.model.entities.Genre;
 import io.github.felipevenas.api_livraria.services.BookService;
+import io.github.felipevenas.api_livraria.validator.BookValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +25,12 @@ public class BookController implements GenericController {
 
     private final BookService bookService;
     private final BookMapper bookMapper;
+    private final BookValidator bookValidator;
 
     @PostMapping
     public ResponseEntity<Void> save(@RequestBody @Valid CreateBookDto createBookDto) {
         Book book = bookMapper.toBook(createBookDto);
+        bookValidator.isbnValidator(book);
         bookService.save(book);
         var url = generateHeaderLocation(book.getId());
         return ResponseEntity.created(url).build();
